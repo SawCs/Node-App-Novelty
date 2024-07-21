@@ -1,0 +1,62 @@
+name: Continuous Delivery
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Lint code
+      run: npm run lint
+
+    - name: Run tests
+      env:
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      run: npm test
+
+    - name: Build application
+      run: npm run build
+
+    - name: Tag version
+      id: tag_version
+      run: |
+        git tag -a v1.0.${{ github.run_number }} -m "Release ${{ github.run_number }}"
+        git push origin v1.0.${{ github.run_number }}
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+        body: |
+          Release notes for ${{ github.run_number }}
+        draft: false
+        prerelease: false
+
