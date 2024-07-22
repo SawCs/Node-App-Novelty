@@ -21,9 +21,11 @@ jobs:
         
     - name: Install ESLint
       run: npm install --save-dev eslint
-
+    
     - name: Initialize ESLint configuration
-      run: npx eslint --init
+      run: npm init @eslint/config --yes
+
+      
       
     - name: Lint code
       run: npm run lint
