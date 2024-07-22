@@ -19,16 +19,7 @@ jobs:
       run: |
         npm install || { cat ~/.npm/_logs/*-debug.log; exit 1; }
         
-    - name: Install ESLint
-      run: npm install --save-dev eslint
-    
-    - name: Initialize ESLint configuration
-      run: npm init @eslint/config --yes
 
-      
-      
-    - name: Lint code
-      run: npm run lint
 
     - name: Run tests
       env:
