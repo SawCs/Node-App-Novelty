@@ -18,7 +18,11 @@ jobs:
     - name: Install dependencies
       run: |
         npm install || { cat ~/.npm/_logs/*-debug.log; exit 1; }
-    - name: Set up ESLint configuration
+        
+    - name: Install ESLint
+      run: npm install --save-dev eslint
+
+    - name: Initialize ESLint configuration
       run: npx eslint --init
       
     - name: Lint code
