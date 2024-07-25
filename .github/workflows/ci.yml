@@ -1,1 +1,40 @@
+name: Continuous Integration
 
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.x'  # This ensures Node.js version > 16.13
+
+    - name: Install yarn
+      run: npm install -g yarn
+
+    - name: Install dependencies
+      run: yarn install || { cat ~/.npm/_logs/*-debug.log; exit 1; }
+
+
+    - name: Lint code
+      run: yarn run lint
+
+    # - name: Run tests
+    #   env:
+    #     POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+    #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    #     POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+    #     POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+    #     POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+    #   run: npm test
+
+
+
+    - name: Build application
+      run: yarn run build
